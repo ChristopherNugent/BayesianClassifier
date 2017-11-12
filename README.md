@@ -1,6 +1,6 @@
 # Using the classifier
 ## Importing
-`from learner import Learner` should do the trick.
+If your files are in the same directory as learner.py, `from learner import Learner` should do the trick.
 
 ## Training data
 The first thing to do is to tag all your training data. Training data should be provided as a list of tuples. The tuples should take the form (class, text).
