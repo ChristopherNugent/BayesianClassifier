@@ -7,7 +7,6 @@ class Learner:
     def __init__(self, records):
         self.records = records
         self.classes = {r[0] for r in records}
-        self.
         self.word_probs = self.build_probability_dict()
 
     def lex(input_text) -> list:
@@ -46,12 +45,12 @@ class Learner:
             k: v for k,
             v in word_sender_counter.items() if sum(
                 v.values()) > 1}
-        word_probs = defaultdict(lambda: 0)
-        word_probs.update(word_sender_counter)
         for words, counter in word_sender_counter.items():
             s = sum(counter.values())
             for k, v in counter.items():
                 counter[k] = v / s
+        word_probs = defaultdict(lambda: 0)
+        word_probs.update(word_sender_counter)
         return word_probs
 
     def classify(self, text):
