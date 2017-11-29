@@ -1,5 +1,3 @@
-Note: This project is still a work-in-progress and I expect to make API changes soon.
-
 # Using the classifier
 ## Importing
 For those unfamiliar with Python, if your files are in the same directory as learner.py, `from learner import Learner` should do the trick.
