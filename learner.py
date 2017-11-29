@@ -4,10 +4,11 @@ from collections import defaultdict
 
 
 class Learner:
-    def __init__(self):
+    def __init__(self, ignore_singletons=False):
         self.classes = set()
         self.word_counters = dict()
         self.word_probs = defaultdict(lambda: 0)
+        self.ignore_singletons = ignore_singletons
 
     def lex(input_text) -> list:
         stop_words = set(stopwords.words('english'))
@@ -55,7 +56,11 @@ class Learner:
         #     for k, v in counter.items():
         #         counter[k] = v / s
         self.word_probs = defaultdict(lambda: 0)
-        self.word_probs.update(self.word_counters)
+        if self.ignore_singletons:
+            filtered_word_counters = {k: v for k, v in self.word_counters.items() if sum(v.values()) > 1}
+            self.word_probs.update(filtered_word_counters)
+        else:
+            self.word_probs.update(self.word_counters)
         return
 
     def classify(self, text):
