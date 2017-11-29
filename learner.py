@@ -4,16 +4,20 @@ from collections import defaultdict
 
 
 class Learner:
-    def __init__(self, records):
-        self.records = records
-        self.classes = {r[0] for r in records}
-        self.word_probs = self.build_probability_dict()
+    def __init__(self):
+        self.classes = set()
+        self.word_counters = dict()
+        self.word_probs = defaultdict(lambda: 0)
 
     def lex(input_text) -> list:
         stop_words = set(stopwords.words('english'))
         return [
             w for w in word_tokenize(
                 input_text.lower()) if w not in stop_words]
+
+    def train(self, records):
+        self.update_word_counters(records)
+        self.update_word_probs()
 
     def extract_features(lexed_input, ns=(1, 2, 3), skip_grams=False) -> set:
         result = []
@@ -33,25 +37,26 @@ class Learner:
     def lex_and_parse(self, text):
         return Learner.extract_features(Learner.lex(text))
 
-    def build_probability_dict(self):
-        word_sender_counter = dict()
-        for r in self.records:
+    def update_word_counters(self, records):    
+        self.classes.update({r[0] for r in records})
+        for r in records:
             for word_tuple in self.lex_and_parse(r[1]):
-                if word_tuple not in word_sender_counter:
-                    word_sender_counter[word_tuple] = defaultdict(lambda: 0)
-                counter_for_tuple = word_sender_counter[word_tuple]
+                if word_tuple not in self.word_counters:
+                    self.word_counters[word_tuple] = defaultdict(lambda: 0)
+                counter_for_tuple = self.word_counters[word_tuple]
                 counter_for_tuple.update({r[0]: counter_for_tuple[r[0]] + 1})
-        word_sender_counter = {
-            k: v for k,
-            v in word_sender_counter.items() if sum(
-                v.values()) > 1}
-        for words, counter in word_sender_counter.items():
-            s = sum(counter.values())
-            for k, v in counter.items():
-                counter[k] = v / s
-        word_probs = defaultdict(lambda: 0)
-        word_probs.update(word_sender_counter)
-        return word_probs
+        # self.word_counters = {
+        #     k: v for k, v in self.word_counters.items() if sum(v.values()) > 1}
+        return
+
+    def update_word_probs(self):
+        # for words, counter in word_sender_counter.items():
+        #     s = sum(counter.values())
+        #     for k, v in counter.items():
+        #         counter[k] = v / s
+        self.word_probs = defaultdict(lambda: 0)
+        self.word_probs.update(self.word_counters)
+        return
 
     def classify(self, text):
         prob_map = {k: [0] for k in self.classes}
